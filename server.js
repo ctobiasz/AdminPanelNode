@@ -23,10 +23,6 @@ app.get('/signup', (req, res) => {
   res.render('users/new')
 })
 
-app.get('/users', (req, res) => {
-  res.render('users/index')
-})
-
 app.post('/users', (req, res) => {
  let params = req.body
   User.sync({force: true}).then(() => {
@@ -49,7 +45,7 @@ app.post('/cohorts', (req, res) => {
   let params = req.body
    Cohort.sync({force: true}).then(() => {
      // Table created
-     return User.create({
+     return Cohort.create({
        name: params.name,
        startDate: params.startDate,
        endDate: params.endDate,
@@ -60,7 +56,25 @@ app.post('/cohorts', (req, res) => {
 })
 
 app.get('/cohorts', (req, res) => {
-  res.render('cohorts/index')
+  let cohorts = []
+  Cohort.all().then((cohort) => {
+    for (c of cohort) {
+      cohorts.push(c)
+    }
+  }).then(() => {
+    res.render('cohorts/index', {cohorts: cohorts})
+  })
+})
+
+app.get('/users', (req, res) => {
+  let users = []
+  User.all().then((user) => {
+    for (u of user) {
+      users.push(u)
+    }
+  }).then(() => {
+    res.render('users/index', {users: users})
+  })
 })
 
 app.get('/new-course', (req, res) => {
