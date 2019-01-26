@@ -6,12 +6,8 @@ const port = 5050;
 app.set('views', './views');
 app.set('view engine', 'ejs');
 
-const Sequelize = require('sequelize');
-const sequelize = new Sequelize({
-  host: 'localhost',
-  dialect: 'sqlite',
-  storage: 'development.sqlite3',
-});
+const user = require('./models/user'); // user.userModel
+const cohort = require('./models/cohort');
 
 // app.[VERB]([PATH], function(req, res) [ // things to do ])
 
@@ -25,9 +21,9 @@ app.get('/signup', (req, res) => {
 
 app.post('/users', (req, res) => {
  let params = req.body
-  User.sync({force: true}).then(() => {
+  user.userModel.sync({force: true}).then(() => {
     // Table created
-    return User.create({
+    return user.userModel.create({
       name: params.name,
       password: params.password,
       email: params.email,
@@ -43,9 +39,9 @@ app.get('/new-cohort', (req, res) => {
 
 app.post('/cohorts', (req, res) => {
   let params = req.body
-   Cohort.sync({force: true}).then(() => {
+   cohort.cohortModel.sync({force: true}).then(() => {
      // Table created
-     return Cohort.create({
+     return cohort.cohortModel.create({
        name: params.name,
        startDate: params.startDate,
        endDate: params.endDate,
@@ -57,7 +53,7 @@ app.post('/cohorts', (req, res) => {
 
 app.get('/cohorts', (req, res) => {
   let cohorts = []
-  Cohort.all().then((cohort) => {
+  cohort.cohortModel.all().then((cohort) => {
     for (c of cohort) {
       cohorts.push(c)
     }
@@ -68,7 +64,7 @@ app.get('/cohorts', (req, res) => {
 
 app.get('/users', (req, res) => {
   let users = []
-  User.all().then((user) => {
+  user.userModel.all().then((user) => {
     for (u of user) {
       users.push(u)
     }
@@ -81,20 +77,6 @@ app.get('/new-course', (req, res) => {
   res.render('courses/new')
 })
 
-// Model definition
-const User = sequelize.define('user', {
-  name: Sequelize.STRING,
-  password: Sequelize.STRING,
-  email: Sequelize.STRING,
-  education: Sequelize.INTEGER
-});
-
-const Cohort = sequelize.define('cohort', {
-  name: Sequelize.STRING,
-  courseId: Sequelize.INTEGER,
-  startDate: Sequelize.DATEONLY,
-  endDate: Sequelize.DATEONLY
-});
 
 
 app.listen(port, () => { console.log(`Express App listening on http://localhost:${port}`)})
